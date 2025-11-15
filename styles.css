@@ -61,6 +61,16 @@ canvas {
   font-weight: bold;
 }
 
+.loading {
+  color: #8B4513;
+  font-weight: bold;
+  margin: 10px;
+  padding: 10px 20px;
+  background: #fff8f0;
+  border-radius: 8px;
+  border: 1px solid #d3a27f;
+}
+
 .info {
   background: #fff8f0;
   border: 1px solid #d3a27f;
@@ -82,4 +92,34 @@ canvas {
   font-size: 14px;
   max-width: 700px;
   color: #4B2E05;
+}
+
+#performance {
+  margin: 10px;
+  padding: 15px;
+  background: #fff8f0;
+  border-radius: 12px;
+  border: 1px solid #d3a27f;
+  max-width: 800px;
+}
+
+.performance-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  margin: 5px 0;
+  background: white;
+  border-radius: 6px;
+  border-left: 4px solid #8B4513;
+}
+
+.performance-algorithm {
+  font-weight: 600;
+  color: #4B2E05;
+}
+
+.performance-time {
+  font-weight: 700;
+  color: #8B4513;
 }
