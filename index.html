@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Базовые растровые алгоритмы - OpenCV.js</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <h1>Базовые растровые алгоритмы - OpenCV.js</h1>
+
+  <div id="opencvStatus" class="loading">Загрузка OpenCV.js...</div>
+
+  <div class="controls">
+    <label>Алгоритм:</label>
+    <select id="algorithm">
+      <option value="step">Пошаговый алгоритм</option>
+      <option value="dda">Алгоритм ЦДА</option>
+      <option value="bresenham">Алгоритм Брезенхема (отрезок)</option>
+      <option value="circle">Алгоритм Брезенхема (окружность)</option>
+      <option value="wu">Сглаженная линия (Ву)</option>
+    </select>
+    <label>X₁: <input type="number" id="x1" value="-10"></label>
+    <label>Y₁: <input type="number" id="y1" value="-5"></label>
+    <label>X₂: <input type="number" id="x2" value="10"></label>
+    <label>Y₂: <input type="number" id="y2" value="8"></label>
+    <label id="radiusLabel" style="display:none;">Радиус: <input type="number" id="radius" value="8"></label>
+    <button onclick="draw()">Построить</button>
+    <button onclick="clearCanvas()">Очистить</button>
+    <button onclick="runPerformanceTest()">Тест производительности</button>
+  </div>
+
+  <div id="time">Среднее время выполнения: —</div>
+  <div id="performance"></div>
+
+  <canvas id="canvas" width="800" height="800"></canvas>
+
+  <div class="info" id="desc"></div>
+
+  <div class="note">
+    <b>Примечание:</b>  
+    Каждая целочисленная координата (x, y) отображается в центре клетки сетки,  
+    что означает привязку координат к дискретной пиксельной сетке.  
+    Один шаг по сетке соответствует одной единице координатного пространства (масштаб 1:1).
+  </div>
+
+  <script src="opencv.js" type="text/javascript"></script>
+  <script src="script.js" type="text/javascript"></script>
+</body>
+</html>
