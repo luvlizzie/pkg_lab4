@@ -91,17 +91,14 @@ function stepByStep(x1, y1, x2, y2) {
             const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const mat = cv.matFromImageData(imageData);
             
-            const dx = x2 - x1, dy = y2 - y1;
-            const steps = Math.max(Math.abs(dx), Math.abs(dy));
-            const xinc = dx / steps, yinc = dy / steps;
-            
             const pointColor = new cv.Scalar(139, 0, 0, 255); 
             
-            let x = x1, y = y1;
-            for (let i = 0; i <= steps; i++) {
-                drawSquareOpenCV(mat, Math.round(x), Math.round(y), pointColor);
-                x += xinc; 
-                y += yinc;
+            const startX = Math.min(x1, x2);
+            const endX = Math.max(x1, x2);
+            
+            for (let x = startX; x <= endX; x++) {
+                const y = y1 + (y2 - y1) * (x - x1) / (x2 - x1);
+                drawSquareOpenCV(mat, x, Math.round(y), pointColor);
             }
             
             cv.imshow(tempCanvas, mat);
@@ -116,14 +113,12 @@ function stepByStep(x1, y1, x2, y2) {
         }
     }
     
-    const dx = x2 - x1, dy = y2 - y1;
-    const steps = Math.max(Math.abs(dx), Math.abs(dy));
-    const xinc = dx / steps, yinc = dy / steps;
-    let x = x1, y = y1;
-    for (let i = 0; i <= steps; i++) {
-        plot(Math.round(x), Math.round(y));
-        x += xinc; 
-        y += yinc;
+    const startX = Math.min(x1, x2);
+    const endX = Math.max(x1, x2);
+    
+    for (let x = startX; x <= endX; x++) {
+        const y = y1 + (y2 - y1) * (x - x1) / (x2 - x1);
+        plot(x, Math.round(y));
     }
 }
 
@@ -139,17 +134,22 @@ function dda(x1, y1, x2, y2) {
             const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const mat = cv.matFromImageData(imageData);
             
-            const dx = x2 - x1, dy = y2 - y1;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
             const steps = Math.max(Math.abs(dx), Math.abs(dy));
-            const xinc = dx / steps, yinc = dy / steps;
+            
+            const xIncrement = dx / steps;
+            const yIncrement = dy / steps;
             
             const pointColor = new cv.Scalar(0, 100, 0, 255); 
             
-            let x = x1, y = y1;
+            let x = x1;
+            let y = y1;
+            
             for (let i = 0; i <= steps; i++) {
-                drawSquareOpenCV(mat, Math.round(x), Math.round(y), pointColor);
-                x += xinc; 
-                y += yinc;
+                drawSquareOpenCV(mat, Math.floor(x), Math.floor(y), pointColor);
+                x += xIncrement;
+                y += yIncrement;
             }
             
             cv.imshow(tempCanvas, mat);
@@ -164,14 +164,20 @@ function dda(x1, y1, x2, y2) {
         }
     }
     
-    const dx = x2 - x1, dy = y2 - y1;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
     const steps = Math.max(Math.abs(dx), Math.abs(dy));
-    const xinc = dx / steps, yinc = dy / steps;
-    let x = x1, y = y1;
+    
+    const xIncrement = dx / steps;
+    const yIncrement = dy / steps;
+    
+    let x = x1;
+    let y = y1;
+    
     for (let i = 0; i <= steps; i++) {
-        plot(Math.round(x), Math.round(y), "#006400");
-        x += xinc; 
-        y += yinc;
+        plot(Math.floor(x), Math.floor(y), "#006400");
+        x += xIncrement;
+        y += yIncrement;
     }
 }
 
@@ -187,25 +193,28 @@ function bresenhamLine(x1, y1, x2, y2) {
             const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const mat = cv.matFromImageData(imageData);
             
-            let dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
-            let sx = x1 < x2 ? 1 : -1, sy = y1 < y2 ? 1 : -1;
+            let x = x1;
+            let y = y1;
+            const dx = Math.abs(x2 - x1);
+            const dy = Math.abs(y2 - y1);
+            const sx = x1 < x2 ? 1 : -1;
+            const sy = y1 < y2 ? 1 : -1;
             let err = dx - dy;
             
             const pointColor = new cv.Scalar(0, 0, 139, 255); 
             
             while (true) {
-                drawSquareOpenCV(mat, x1, y1, pointColor);
+                drawSquareOpenCV(mat, x, y, pointColor);
+                if (x === x2 && y === y2) break;
                 
-                if (x1 === x2 && y1 === y2) break;
-                
-                let e2 = 2 * err;
-                if (e2 > -dy) { 
-                    err -= dy; 
-                    x1 += sx; 
+                const e2 = 2 * err;
+                if (e2 > -dy) {
+                    err -= dy;
+                    x += sx;
                 }
-                if (e2 < dx) { 
-                    err += dx; 
-                    y1 += sy; 
+                if (e2 < dx) {
+                    err += dx;
+                    y += sy;
                 }
             }
             
@@ -221,15 +230,27 @@ function bresenhamLine(x1, y1, x2, y2) {
         }
     }
     
-    let dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
-    let sx = x1 < x2 ? 1 : -1, sy = y1 < y2 ? 1 : -1;
+    let x = x1;
+    let y = y1;
+    const dx = Math.abs(x2 - x1);
+    const dy = Math.abs(y2 - y1);
+    const sx = x1 < x2 ? 1 : -1;
+    const sy = y1 < y2 ? 1 : -1;
     let err = dx - dy;
+    
     while (true) {
-        plot(x1, y1, "#00008B");
-        if (x1 === x2 && y1 === y2) break;
-        let e2 = 2 * err;
-        if (e2 > -dy) { err -= dy; x1 += sx; }
-        if (e2 < dx) { err += dx; y1 += sy; }
+        plot(x, y, "#00008B");
+        if (x === x2 && y === y2) break;
+        
+        const e2 = 2 * err;
+        if (e2 > -dy) {
+            err -= dy;
+            x += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            y += sy;
+        }
     }
 }
 
@@ -470,25 +491,28 @@ function updateDescription(algo) {
     const texts = {
         step: `
             <h2>Пошаговый алгоритм</h2>
-            <p><strong>Принцип работы:</strong> Самый простой алгоритм растеризации отрезка. Координаты X и Y изменяются равномерно с постоянным шагом.</p>
+            <p><strong>Принцип работы:</strong> Простой алгоритм, который проходит по оси X и вычисляет Y для каждого X с помощью уравнения прямой.</p>
             <p><strong>Формулы:</strong></p>
             <ul>
-                <li>steps = max(|Δx|, |Δy|)</li>
-                <li>x<sub>inc</sub> = Δx / steps</li>
-                <li>y<sub>inc</sub> = Δy / steps</li>
+                <li>y = y1 + (y2 - y1) × (x - x1) / (x2 - x1)</li>
+                <li>Для каждого x от x1 до x2 вычисляется y</li>
+                <li>Округление: Math.round(y)</li>
             </ul>
+            <p><strong>Особенности:</strong> Всегда рисует по оси X, может пропускать пиксели на крутых линиях</p>
             <p><strong>Использование OpenCV:</strong> ${openCVReady ? "✅ Квадраты рисуются через cv.rectangle()" : "❌ OpenCV не доступен"}</p>
         `,
         
         dda: `
             <h2>Алгоритм ЦДА (Digital Differential Analyzer)</h2>
-            <p><strong>Принцип работы:</strong> Улучшенная версия пошагового алгоритма. Использует дифференциальный анализ для вычисления приращений координат.</p>
+            <p><strong>Принцип работы:</strong> Использует дифференциальные приращения для накопления координат. Выбирает большее из |Δx|, |Δy| как количество шагов.</p>
             <p><strong>Формулы:</strong></p>
             <ul>
                 <li>steps = max(|Δx|, |Δy|)</li>
-                <li>x<sub>i+1</sub> = x<sub>i</sub> + Δx/steps</li>
-                <li>y<sub>i+1</sub> = y<sub>i</sub> + Δy/steps</li>
+                <li>x<sub>inc</sub> = Δx / steps</li>
+                <li>y<sub>inc</sub> = Δy / steps</li>
+                <li>Округление: Math.floor(x), Math.floor(y)</li>
             </ul>
+            <p><strong>Особенности:</strong> Накопление координат, использует floor() вместо round()</p>
             <p><strong>Использование OpenCV:</strong> ${openCVReady ? "✅ Квадраты рисуются через cv.rectangle()" : "❌ OpenCV не доступен"}</p>
         `,
         
@@ -497,12 +521,14 @@ function updateDescription(algo) {
             <p><strong>Принцип работы:</strong> Целочисленный алгоритм, использующий только сложение и вычитание. Основан на анализе ошибки для выбора следующего пикселя.</p>
             <p><strong>Основные шаги:</strong></p>
             <ol>
-                <li>Вычисление Δx, Δy</li>
+                <li>Вычисление Δx = |x2 - x1|, Δy = |y2 - y1|</li>
+                <li>Определение направлений: sx = sign(x2 - x1), sy = sign(y2 - y1)</li>
                 <li>Инициализация ошибки: err = Δx - Δy</li>
                 <li>На каждом шаге: e2 = 2 × err</li>
                 <li>Если e2 > -Δy: err -= Δy, x += sx</li>
                 <li>Если e2 < Δx: err += Δx, y += sy</li>
             </ol>
+            <p><strong>Преимущества:</strong> Только целочисленная арифметика, высокая скорость</p>
             <p><strong>Использование OpenCV:</strong> ${openCVReady ? "✅ Квадраты рисуются через cv.rectangle()" : "❌ OpenCV не доступен"}</p>
         `,
         
@@ -535,8 +561,8 @@ function updateDescription(algo) {
                 <li>Используется вещественная арифметика для точности</li>
                 <li>Альфа-канал для плавных переходов</li>
             </ul>
-            <p><strong>Использование OpenCV:</strong> ${openCVReady ? "✅ Квадраты рисуются через cv.rectangle() с альфа-каналом" : "❌ OpenCV не доступен, используется Canvas API"}</p>
             <p><strong>Формула прозрачности:</strong> alpha = дробная_часть(y)</p>
+            <p><strong>Использование OpenCV:</strong> ${openCVReady ? "✅ Квадраты рисуются через cv.rectangle() с альфа-каналом" : "❌ OpenCV не доступен, используется Canvas API"}</p>
         `
     };
     desc.innerHTML = texts[algo] || "<h2>Выберите алгоритм</h2>";
@@ -547,6 +573,12 @@ function runPerformanceTest() {
     const testPoints = [[-10, -5, 10, 8]];
     const results = {};
 
+    const originalCanvas = document.createElement('canvas');
+    originalCanvas.width = canvas.width;
+    originalCanvas.height = canvas.height;
+    const originalCtx = originalCanvas.getContext('2d');
+    originalCtx.drawImage(canvas, 0, 0);
+
     for (const algo of algorithms) {
         results[algo] = [];
         for (const [x1, y1, x2, y2] of testPoints) {
@@ -554,11 +586,20 @@ function runPerformanceTest() {
             const t0 = performance.now();
             
             for (let i = 0; i < runs; i++) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawGrid();
+                
                 switch (algo) {
                     case "step": stepByStep(x1, y1, x2, y2); break;
                     case "dda": dda(x1, y1, x2, y2); break;
                     case "bresenham": bresenhamLine(x1, y1, x2, y2); break;
-                    case "wu": wuLine(x1, y1, x2, y2); break;
+                    case "wu": 
+                        if (openCVReady) {
+                            wuLineOpenCV(x1, y1, x2, y2);
+                        } else {
+                            wuLine(x1, y1, x2, y2);
+                        }
+                        break;
                 }
             }
             
@@ -566,6 +607,9 @@ function runPerformanceTest() {
             results[algo].push((t1 - t0) / runs);
         }
     }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(originalCanvas, 0, 0);
 
     let resultHTML = "<h3>Результаты теста производительности:</h3>";
     for (const algo of algorithms) {
